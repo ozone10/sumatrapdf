@@ -1,0 +1,61 @@
+name: Build Dark Mode
+on:
+  push:
+    branches: [ DarkMode ]
+  workflow_dispatch:
+
+jobs:
+  build_prerel:
+    name: Build prerelease
+    #runs-on: SumatraBuilder
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [ x64 ]
+        include:
+          - arch: x64
+            platform: x64
+
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+        with:
+          # needed to calc build number via git log --oneline
+          fetch-depth: 0
+
+      - name: Build-prerelease
+        run: .\doit.bat -build-pre-rel
+
+      #- name: Archive artifact ${{ matrix.arch }}
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: SumatraPDF-prerel-dark-${{ matrix.arch }}
+      #    path: out\final-prerel\SumatraPDF-prerel-${{ matrix.arch }}.exe
+
+  build:
+    name: Build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Release]
+        arch: [ x64 ]
+        include:
+          - arch: x64
+            platform: x64
+            out_dir: rel64
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build
+        run: msbuild "vs2022\SumatraPDF.sln" /m /p:configuration="${{ matrix.configuration }}" /p:platform="${{ matrix.platform }}" /t:SumatraPDF
+
+      - name: Archive artifact ${{ matrix.arch }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: SumatraPDF-dark-${{ matrix.platform }}
+          path: out\${{ matrix.out_dir }}\SumatraPDF.exe

@@ -1145,6 +1145,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
     gRenderCache = new RenderCache();
 
+    DarkMode::initDarkMode();
+
     LoadSettings();
     UpdateGlobalPrefs(flags);
     SetCurrentLang(flags.lang ? flags.lang : gGlobalPrefs->uiLanguage);

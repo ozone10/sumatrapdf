@@ -910,6 +910,7 @@ bool CommandPaletteWnd::Create(MainWindow* win, const char* prefix, int smartTab
         FilterStringsForQuery(prefix, m->strings);
         c->SetModel(m);
         listBox = c;
+        DarkMode::setDarkScrollBar(listBox->hwnd);
         vbox->AddChild(c, 1);
     }
     {
